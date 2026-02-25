@@ -1,0 +1,6 @@
+cup - hrníček
+dog - pes
+computer - počítač
+keyboard - klávesnice
+freedom - svoboda
+
