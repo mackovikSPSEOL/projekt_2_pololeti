@@ -43,6 +43,9 @@ class VocabularyGame(ctk.CTk):
         self.btn_C2 = ctk.CTkButton(self, text="C2", command=lambda: self.start_game("C2"), fg_color="red", text_color="black")
         self.btn_C2.pack(pady=4)
 
+
+
+
     def load_vocabulary(self, filename):
         if not os.path.exists(filename):
             return {"Error": "Soubor nenalezen"}
@@ -55,12 +58,44 @@ class VocabularyGame(ctk.CTk):
         return vocabulary
 
     def start_game(self, difficulty):
+        global global_difficulty
+        global get_vocabulary
+        global_difficulty = difficulty
         selected_difficulty = difficulty
         get_vocabulary = self.load_vocabulary(f"assets\{selected_difficulty}.txt")
-        print(get_vocabulary)
-
-
+        print(list(get_vocabulary.keys()))
+        gameplay_window()
         
+        # print(get_vocabulary) # debug
+    
+
+# creating window - selecting word from chosen difficulty
+
+def gameplay_window():
+        gameplay_window = ctk.CTk()
+        gameplay_window.title(f"Obtížnost - {global_difficulty}")
+        gameplay_window.geometry("500x450")
+
+        title_label = ctk.CTkLabel(gameplay_window, text="Slovo:", font=("Arial", 32))
+        title_label.pack(pady=20)
+
+        list_chosen_word, list_chosen_word_translated = list(get_vocabulary.keys()), list(get_vocabulary.values())
+        
+        chosen_word = list_chosen_word[random.randint(0, int((len(list(get_vocabulary.keys() - 1)))))] #totalni nesmysl
+
+        current_word_label = ctk.CTkLabel(gameplay_window, text=f"{chosen_word}", font=("Arial", 32))
+        current_word_label.pack(pady=40)
+
+
+        gameplay_window.mainloop()
+        
+
+
+    # def get_random_word(self, none):
+    #     word = random.choice(get_vocabulary)
+    #     print(word)
+
+    #     get_random_word()
 
 
 
