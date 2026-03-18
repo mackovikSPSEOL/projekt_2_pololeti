@@ -1,7 +1,7 @@
 import customtkinter as ctk
 import random
 import os
-
+import time
 
 
 
@@ -63,13 +63,14 @@ class VocabularyGame(ctk.CTk):
         global_difficulty = difficulty
         selected_difficulty = difficulty
         get_vocabulary = self.load_vocabulary(f"assets\{selected_difficulty}.txt")
-        print(list(get_vocabulary.keys()))
+        # print(list(get_vocabulary.keys()))
         gameplay_window()
         
         # print(get_vocabulary) # debug
     
 
 # creating window - selecting word from chosen difficulty
+
 
 def gameplay_window():
         gameplay_window = ctk.CTk()
@@ -80,11 +81,61 @@ def gameplay_window():
         title_label.pack(pady=20)
 
         list_chosen_word, list_chosen_word_translated = list(get_vocabulary.keys()), list(get_vocabulary.values())
-        
-        chosen_word = list_chosen_word[random.randint(0, int((len(list(get_vocabulary.keys() - 1)))))] #totalni nesmysl
+        print(f"{list_chosen_word}\n{list_chosen_word_translated}") # debug
+
+        random_number = random.randint(0, (len(list_chosen_word) - 1))
+
+        chosen_word = list_chosen_word[random_number]
+        translated_word = list_chosen_word_translated[random_number]
+
+        # chosen_word = list_chosen_word[random.randint(0, int((len(list(get_vocabulary.keys() - 1)))))] #totalni nesmysl
+
+                #comparing input with translation
+        def check_translation():
+            get_translation = input_window.get()
+            if get_translation.lower() == translated_word.lower():
+                result_label.configure(text="Správně!", text_color="green")
+            else:
+                result_label.configure(text=f"Nesprávně! Správný překlad je: {translated_word}", text_color="red")
+            
+            generate_next_word()
+            
+       
+
+
+
+
+
+            # print(f"{chosen_word}\n{translated_word}")
+            # user_input = input_window.get()
+            # if user_input.lower() == translated_word.lower():
+            #     result_label.config(text="Správně!", text_color="green")
+            # else:
+            #     result_label.config(text=f"Nesprávně! Správný překlad je: {translated_word}", text_color="red")
+
 
         current_word_label = ctk.CTkLabel(gameplay_window, text=f"{chosen_word}", font=("Arial", 32))
         current_word_label.pack(pady=40)
+
+        input_window = ctk.CTkEntry(gameplay_window, font=("Arial", 16))
+        input_window.pack(pady=20)
+        result_label = ctk.CTkLabel(gameplay_window, text="", font=("Arial", 16))
+        result_label.pack(pady=10)
+        confirm_button = ctk.CTkButton(gameplay_window, text="Ověřit", command=check_translation, fg_color="blue", text_color="white")
+        confirm_button.pack(pady=10)
+
+
+        def generate_next_word():
+            list_chosen_word, list_chosen_word_translated = list(get_vocabulary.keys()), list(get_vocabulary.values())
+            print(f"{list_chosen_word}\n{list_chosen_word_translated}") # debug
+
+            random_number = random.randint(0, (len(list_chosen_word) - 1))
+
+            chosen_word = list_chosen_word[random_number]
+            translated_word = list_chosen_word_translated[random_number]
+
+            current_word_label.configure(text=f"{chosen_word}")
+
 
 
         gameplay_window.mainloop()
