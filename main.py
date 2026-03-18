@@ -1,12 +1,14 @@
 import customtkinter as ctk
 import random
-import os
-import time
+import os, time, asyncio
 
 
 
 
-
+async def reseting_result():
+    print("Resetuji výsledek...") # debug
+    await asyncio.sleep(2)
+    print("fungovalO?")
 
 
 class VocabularyGame(ctk.CTk):
@@ -73,15 +75,22 @@ class VocabularyGame(ctk.CTk):
 
 
 def gameplay_window():
+        
+        
+        global chosen_word
+        global translated_word
         gameplay_window = ctk.CTk()
         gameplay_window.title(f"Obtížnost - {global_difficulty}")
         gameplay_window.geometry("500x450")
+
+
+        locked = False
 
         title_label = ctk.CTkLabel(gameplay_window, text="Slovo:", font=("Arial", 32))
         title_label.pack(pady=20)
 
         list_chosen_word, list_chosen_word_translated = list(get_vocabulary.keys()), list(get_vocabulary.values())
-        print(f"{list_chosen_word}\n{list_chosen_word_translated}") # debug
+        # print(f"{list_chosen_word}\n{list_chosen_word_translated}") # debug
 
         random_number = random.randint(0, (len(list_chosen_word) - 1))
 
@@ -91,14 +100,24 @@ def gameplay_window():
         # chosen_word = list_chosen_word[random.randint(0, int((len(list(get_vocabulary.keys() - 1)))))] #totalni nesmysl
 
                 #comparing input with translation
-        def check_translation():
+        def check_translation(event=None):
+            nonlocal locked
+
+            if locked:
+                return  # ignore spam
+
+            locked = True  # 🔒 lock input
+
             get_translation = input_window.get()
+
             if get_translation.lower() == translated_word.lower():
                 result_label.configure(text="Správně!", text_color="green")
             else:
-                result_label.configure(text=f"Nesprávně! Správný překlad je: {translated_word}", text_color="red")
-            
-            generate_next_word()
+                result_label.configure(text=f"Nesprávně! Správný překlad je: {translated_word}",text_color="red")
+
+            input_window.delete(0, "end")
+
+            gameplay_window.after(2000, generate_next_word)
             
        
 
@@ -119,23 +138,41 @@ def gameplay_window():
 
         input_window = ctk.CTkEntry(gameplay_window, font=("Arial", 16))
         input_window.pack(pady=20)
+        input_window.bind("<Return>", check_translation)
+        input_window.focus()
+
         result_label = ctk.CTkLabel(gameplay_window, text="", font=("Arial", 16))
         result_label.pack(pady=10)
+        
+
         confirm_button = ctk.CTkButton(gameplay_window, text="Ověřit", command=check_translation, fg_color="blue", text_color="white")
         confirm_button.pack(pady=10)
 
 
         def generate_next_word():
+            global chosen_word
+            global translated_word
+            nonlocal locked
+
+            result_label.configure(text="")
+            input_window.delete(0, "end")
             list_chosen_word, list_chosen_word_translated = list(get_vocabulary.keys()), list(get_vocabulary.values())
-            print(f"{list_chosen_word}\n{list_chosen_word_translated}") # debug
+            
 
             random_number = random.randint(0, (len(list_chosen_word) - 1))
+            while chosen_word == list_chosen_word[random_number]:  # prevent same word twice in a row
+                random_number = random.randint(0, (len(list_chosen_word) - 1))
+                if chosen_word != list_chosen_word[random_number]:
+                    break
+                
 
             chosen_word = list_chosen_word[random_number]
             translated_word = list_chosen_word_translated[random_number]
+            print(f"{chosen_word}\n{translated_word}") # debug
+            result_label.configure(text="")
 
             current_word_label.configure(text=f"{chosen_word}")
-
+            locked = False  # unlock input
 
 
         gameplay_window.mainloop()
