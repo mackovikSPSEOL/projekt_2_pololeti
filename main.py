@@ -1,15 +1,12 @@
 import customtkinter as ctk
 import random
 import os, time, asyncio
+import matplotlib.pyplot as plt
 
-
-
-
-async def reseting_result():
-    print("Resetuji výsledek...") # debug
-    await asyncio.sleep(2)
-    print("fungovalO?")
-
+session_score = 0
+total_score = 0 
+correct = 0
+incorrect = 0
 
 class VocabularyGame(ctk.CTk):
     def __init__(self):
@@ -102,7 +99,7 @@ def gameplay_window():
                 #comparing input with translation
         def check_translation(event=None):
             nonlocal locked
-
+            global incorrect, correct, session_score, total_score
             if locked:
                 return  # ignore spam
 
@@ -112,8 +109,12 @@ def gameplay_window():
 
             if get_translation.lower() == translated_word.lower():
                 result_label.configure(text="Správně!", text_color="green")
+                session_score += 1
+                correct += 1
             else:
                 result_label.configure(text=f"Nesprávně! Správný překlad je: {translated_word}",text_color="red")
+                session_score -= 1
+                incorrect += 1
 
             input_window.delete(0, "end")
 
@@ -169,11 +170,21 @@ def gameplay_window():
             chosen_word = list_chosen_word[random_number]
             translated_word = list_chosen_word_translated[random_number]
             print(f"{chosen_word}\n{translated_word}") # debug
+            print("\n")
+            print(f"Session score: {session_score}\nTotal score: {total_score}\nCorrect: {correct}\nIncorrect: {incorrect}") # debug
             result_label.configure(text="")
 
             current_word_label.configure(text=f"{chosen_word}")
             locked = False  # unlock input
+        def on_close():
+            print("zavřel si okno?")
+ 
+            with open("score.txt", "w") as score_file:
+                score_file.write(f"Session score: {session_score}\nTotal score: {total_score}\nCorrect: {correct}\nIncorrect: {incorrect}")
+            gameplay_window.destroy()
 
+        # Override the close button behavior
+        gameplay_window.protocol("WM_DELETE_WINDOW", on_close)
 
         gameplay_window.mainloop()
         
