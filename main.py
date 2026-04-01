@@ -1,6 +1,6 @@
 import customtkinter as ctk
 import random
-import os, time, asyncio
+import os, time, datetime
 import matplotlib.pyplot as plt
 
 session_score = 0
@@ -180,7 +180,7 @@ def gameplay_window():
             print("zavřel si okno?")
  
             with open("score.txt", "w") as score_file:
-                score_file.write(f"Session score: {session_score}\nTotal score: {total_score}\nCorrect: {correct}\nIncorrect: {incorrect}")
+                score_file.write(f"{datetime.datetime.now()}\n - Session score: {correct - incorrect}\n  Correct: {correct}\n - Incorrect: {incorrect}\n\n")
             gameplay_window.destroy()
 
         # Override the close button behavior
