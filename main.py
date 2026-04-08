@@ -179,25 +179,63 @@ def gameplay_window():
         def on_close():
             print("zavřel si okno?")
  
-            with open("score.txt", "w") as score_file:
-                score_file.write(f"{datetime.datetime.now()}\n - Session score: {correct - incorrect}\n  Correct: {correct}\n - Incorrect: {incorrect}\n\n")
+            with open("score.txt", "a") as score_file:
+                score_file.write(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n - Session score: {correct - incorrect}\n  Correct: {correct}\n - Incorrect: {incorrect}\n\n")
             gameplay_window.destroy()
+            draw_graph()
+
+        def draw_graph():
+            # Read and parse the score.txt file
+            sessions = []
+
+            with open("score.txt", "r") as file:
+                lines = file.readlines()
+    
+                i = 0
+                while i < len(lines):
+                    if lines[i].strip():  # If line is not empty
+                        # Parse datetime
+                        date_str = lines[i].strip()
+                        try:
+                            # Try parsing with microseconds
+                            date = datetime.datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S.%f")
+                        except:
+                            # Try parsing without microseconds
+                            date = datetime.datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+            
+                        # Parse scores (next 3 lines)
+                        correct = int(lines[i+2].split(":")[1].strip())
+                        incorrect = int(lines[i+3].split(":")[1].strip())
+            
+                        sessions.append({
+                            'correct': correct,
+                            'incorrect': incorrect
+                        })
+            
+                        i += 5  # Skip to next session
+                    else:
+                        i += 1
+
+            # Calculate totals
+            total_correct = sum(s['correct'] for s in sessions)
+            total_incorrect = sum(s['incorrect'] for s in sessions)
+
+            # Create pie chart
+            plt.figure(figsize=(8, 8))
+            plt.pie([total_correct, total_incorrect], 
+                    labels=['Correct', 'Incorrect'],
+                    autopct='%1.1f%%',
+                    colors=['#2ecc71', '#e74c3c'],
+                    startangle=90)
+            plt.title(f'Overall Performance\n({total_correct + total_incorrect} total questions)', 
+                    fontsize=14, fontweight='bold')
+            plt.show()
 
         # Override the close button behavior
         gameplay_window.protocol("WM_DELETE_WINDOW", on_close)
 
+
         gameplay_window.mainloop()
-        
-
-
-    # def get_random_word(self, none):
-    #     word = random.choice(get_vocabulary)
-    #     print(word)
-
-    #     get_random_word()
-
-
-
 
 
 
