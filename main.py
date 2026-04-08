@@ -96,7 +96,7 @@ def gameplay_window():
 
         # chosen_word = list_chosen_word[random.randint(0, int((len(list(get_vocabulary.keys() - 1)))))] #totalni nesmysl
 
-                #comparing input with translation
+            #comparing input with translation
         def check_translation(event=None):
             nonlocal locked
             global incorrect, correct, session_score, total_score
@@ -176,6 +176,8 @@ def gameplay_window():
 
             current_word_label.configure(text=f"{chosen_word}")
             locked = False  # unlock input
+
+
         def on_close():
             print("zavřel si okno?")
  
