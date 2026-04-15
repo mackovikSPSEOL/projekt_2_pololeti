@@ -3,7 +3,7 @@ import random
 import os, time, datetime
 import matplotlib.pyplot as plt
 
-session_score = 0
+streak = 0
 total_score = 0 
 correct = 0
 incorrect = 0
@@ -99,7 +99,7 @@ def gameplay_window():
             #comparing input with translation
         def check_translation(event=None):
             nonlocal locked
-            global incorrect, correct, session_score, total_score
+            global incorrect, correct, streak, total_score
             if locked:
                 return  # ignore spam
 
@@ -109,11 +109,11 @@ def gameplay_window():
 
             if get_translation.lower() == translated_word.lower():
                 result_label.configure(text="Správně!", text_color="green")
-                session_score += 1
+                streak += 1
                 correct += 1
             else:
                 result_label.configure(text=f"Nesprávně! Správný překlad je: {translated_word}",text_color="red")
-                session_score -= 1
+                streak -= 1
                 incorrect += 1
 
             input_window.delete(0, "end")
@@ -171,7 +171,7 @@ def gameplay_window():
             translated_word = list_chosen_word_translated[random_number]
             print(f"{chosen_word}\n{translated_word}") # debug
             print("\n")
-            print(f"Session score: {session_score}\nTotal score: {total_score}\nCorrect: {correct}\nIncorrect: {incorrect}") # debug
+            print(f"streak: {streak}\nTotal score: {total_score}\nCorrect: {correct}\nIncorrect: {incorrect}") # debug
             result_label.configure(text="")
 
             current_word_label.configure(text=f"{chosen_word}")
@@ -182,7 +182,7 @@ def gameplay_window():
             print("zavřel si okno?")
  
             with open("score.txt", "a") as score_file:
-                score_file.write(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n - Session score: {correct - incorrect}\n  Correct: {correct}\n - Incorrect: {incorrect}\n\n")
+                score_file.write(f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n - streak: {correct - incorrect}\n  Correct: {correct}\n - Incorrect: {incorrect}\n\n")
             gameplay_window.destroy()
             draw_graph()
 
